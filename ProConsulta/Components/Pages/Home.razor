@@ -1,0 +1,78 @@
+﻿@page "/"
+@using ProConsulta.Models
+@using ProConsulta.Repositories.Agendamentos
+@using System.Globalization
+@inject IAgendamentoRepository repository
+
+<PageTitle>DASHBOARD</PageTitle>
+
+<MudText Typo="Typo.h3" Class="d-flex justify-content-center">DASHBOARD</MudText>
+
+<div>
+    <MudPaper Class="pa-4">
+        <MudChart ChartType="ChartType.Bar"
+                  ChartSeries="@Series"
+                  XAxisLabels="@XAxisLabels"
+                  ChartOptions="@Options"
+                  Width="100%"
+                  Height="350px" />
+    </MudPaper>
+</div>
+
+<div>
+    <MudPaper Class="pa-4">
+        <MudChart ChartType="ChartType.Pie"
+                  InputData="@data"
+                  InputLabels="@labels"
+                  Width="300px"
+                  Height="300px" />
+    </MudPaper>
+</div>
+
+@code {
+    private ChartOptions Options = new ChartOptions
+        {
+            LineStrokeWidth = 20,
+            YAxisTicks = 1
+        };
+
+    private String[] XAxisLabels { get; set; } = [];
+    private List<ChartSeries> Series { get; set; } = new();
+
+    private double[] data { get; set; } = [];
+    private string[] labels { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await repository.GetReportAsync();
+
+        if (result is null || !result.Any())
+            return;
+
+        MontaGraficoBarra(result);
+        MontaGraficoTorta(result);
+    }
+
+    private void MontaGraficoBarra(List<AgendamentosAnuais> agendamentos)
+    {
+        XAxisLabels = agendamentos
+                        .Select(x => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(x.Mes)).ToArray();
+
+        var serie = new ChartSeries
+            {
+                Name = "Atendimentos Mensais",
+                Data = agendamentos.Select(x => (double)x.QuantidadeAgendamentos).ToArray()
+            };
+
+        Series.Add(serie);
+    }
+
+    private void MontaGraficoTorta(List<AgendamentosAnuais> agendamentos)
+    {
+        labels = agendamentos
+                    .Select(x => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(x.Mes)).ToArray();
+
+        data = agendamentos.Select(x => (double)x.QuantidadeAgendamentos).ToArray();
+    }
+}
+
