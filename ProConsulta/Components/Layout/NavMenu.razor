@@ -1,4 +1,5 @@
-﻿<MudNavMenu>
+﻿@using ProConsulta.Components.Account.Shared
+<MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <MudNavLink Href="pacientes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">Pacientes</MudNavLink>
 	<MudNavLink Href="medicos" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person4">Médicos</MudNavLink>
@@ -8,10 +9,10 @@
 	<AuthorizeView>
 		<Authorized>
 			<MudNavLink Href="Account/Manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">@context.User.Identity?.Name</MudNavLink>
+			<MudNavLink Href="Account/Register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Register</MudNavLink>
 		</Authorized>
 		<NotAuthorized>
-			<MudNavLink Href="Account/Register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Register</MudNavLink>
-			<MudNavLink Href="Account/Login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Login</MudNavLink>
+		     <RedirectToLogin />
 		</NotAuthorized>
 	</AuthorizeView>
 
